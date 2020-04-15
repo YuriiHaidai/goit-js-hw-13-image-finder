@@ -1,8 +1,8 @@
 import template from '../templates/template.hbs';
+import refs from './refs.js';
 
-const gallery = document.querySelector('.gallery');
-
-export default function render(photos) {
+export function renderList(photos) {
   const markup = photos.map(photo => template(photo)).join('');
-  gallery.insertAdjacentHTML('beforeend', markup);
+
+  refs.gallery.insertAdjacentHTML('beforeend', markup);
 }
