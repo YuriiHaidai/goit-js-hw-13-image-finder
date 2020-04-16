@@ -1,18 +1,38 @@
 import './styles.css';
-import fetchImages from './js/apiService.js';
-import refs from './js/refs.js';
-import * as render from './js/render.js';
+import apiService from './apiService';
+import imageCardTemplate from './templates/template.hbs';
 
-refs.searchForm.addEventListener('submit', handleSubmit);
+const refs = {
+  searchForm: document.querySelector('#search-form'),
+  gallery: document.querySelector('.gallery'),
+  loadMoreBtn: document.querySelector('.js-btn-hidden'),
+};
 
-function handleSubmit(e) {
+refs.searchForm.addEventListener('submit', handleInputForm);
+refs.loadMoreBtn.addEventListener('click', fetchImages);
+
+function handleInputForm(e) {
   e.preventDefault();
+  clearList();
+  apiService.resetPage();
+  apiService.searchQuery = e.target.elements[0].value;
+  fetchImages();
 
-  const serchValue = e.target.elements[0].value;
-
-  fetchImages(serchValue);
+  refs.loadMoreBtn.classList.add('js-btn-visibil');
 }
 
-refs.button.addEventListener('click', () => {
-  fetchImages(serchValue);
-});
+function fetchImages() {
+  apiService.fetchImages().then(hits => {
+    createList(hits);
+  });
+}
+
+function createList(items) {
+  const list = items.map(item => imageCardTemplate(item)).join('');
+  refs.gallery.insertAdjacentHTML('beforeend', list);
+}
+
+function clearList() {
+  refs.gallery.innerHTML = '';
+  refs.loadMoreBtn.classList.remove('js-btn-visibil');
+}
